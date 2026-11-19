@@ -1,0 +1,6 @@
+flask
+pymupdf
+pymysql
+requests
+pillow
+selenium

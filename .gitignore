@@ -1,0 +1,35 @@
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Secrets / local config
+.env
+.env.*
+*.local
+
+# Generated artifacts (proof screenshots, scratch output)
+screenshots/
+DUMP/
+*.png
+debug_*.html
+
+# Downloaded source data (re-fetched automatically, ~2 MB)
+aicte_list.pdf
+*.pdf
+
+# Logs
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
