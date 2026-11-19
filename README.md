@@ -66,7 +66,22 @@ The PDF is downloaded on first run and cached. Use `--refresh` to re-download it
    python pipeline.py --name "Anjaneya University"
    python pipeline.py --name "Amity University" --state Rajasthan
    ```
+   If the name is shared, a terminal run lists the choices and asks for the state. Use
+   `--no-prompt` to print them and exit with code 2 instead. Add `-v` for debug logs.
    Screenshots are saved to `screenshots/ugc/` and `screenshots/aicte/`.
+
+   **Batch mode** captures many institutions in one run. Shared names are never a problem
+   because each institution is resolved by its database id. Files are named by name and state,
+   plus city (then id) only when name and state are not unique:
+   ```bash
+   python pipeline.py --all --dry-run                          # plan only
+   python pipeline.py --all --source ugc --skip-existing       # every UGC university
+   python pipeline.py --all --source aicte --state Gujarat     # AICTE institutions in one state
+   python pipeline.py --all                                    # every list each institution is on
+   ```
+   One Chrome session and one indexed PDF serve the whole run. A failing row is logged and the
+   run continues. `logs/batch_<time>.csv` records the status of every row, and the exit code is 1
+   if any row failed. Use `--skip-existing` to resume. Everything is logged to `logs/pipeline.log`.
 4. Start the API (`PORT` defaults to 5000):
    ```bash
    python api.py
@@ -79,8 +94,11 @@ The PDF is downloaded on first run and cached. Use `--refresh` to re-download it
 | GET | `/api/screenshots?name=...` | Primary proof PNG |
 | GET | `/api/screenshots/meta?name=...` | Which lists matched, and the files |
 | POST | `/api/screenshots?name=...` | Capture screenshots for every matching list |
+| POST | `/api/batch?source=ugc\|aicte\|all` | Start a background batch (`state`, `limit`, `skip_existing`, `dry_run`). Returns 202 |
+| GET | `/api/batch` | Progress and failures of the current or last batch |
+| DELETE | `/api/batch` | Stop the running batch |
 
-Add `&state=...` when several institutions share a name.
+A shared name returns 409 with `required` (`state` or `city`), a `hint` and the `matches`. Add `&state=...` (and `&city=...` if asked).
 
 ## Notes
 
